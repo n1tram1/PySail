@@ -1,15 +1,22 @@
+#!/usr/bin/python
+#Python version is 2.7.6
+#Author: Martin Schmidt aka qw2100m
+#READ THE README
+#Oh and all the '- 19.25' throughout this code are so that coords of an img are the ones of the center of that img instead of it's top left corner.
+
 import sys
 import random
 import pygame
 from pygame.locals import *
 
 pygame.init()
-screen=pygame.display.set_mode((640,480))
-pygame.display.set_caption("HB16 2k15")
+RESOLUTION = (640, 480)
+screen=pygame.display.set_mode(RESOLUTION)
+pygame.display.set_caption("PySail")
 
 
 class Boat():
-    def __init__(self, start_angle):
+    def __init__(self, start_angle, start_x, start_y):
         #Images of the HB16 under all the possible angles for the game.
         self.HB16_0   = pygame.image.load("Art/HB16_0.png")
         self.HB16_5   = pygame.image.load("Art/HB16_5.png")
@@ -95,6 +102,8 @@ class Boat():
         self.GREY            = (128, 128, 128)        
         
         self.angle = start_angle #Starting angle of the boat
+        self.pos_x = start_x - 19.25
+        self.pos_y = start_y - 19.25
         
         #This find what is the set starting angle and from that sets the appropriate image
         if self.angle == 0:
@@ -685,12 +694,16 @@ class Boat():
             
             
     
-boat = Boat(0)
 
-while True:
-    screen.blit(boat.SEA, (0, 0))
-    #screen.fill(random.choice(colors_list)) #Blue background
-    screen.blit(boat.boat_img, (160, 120))
+     
+
+
+
+boat = Boat(0,320, 240)
+
+while True: #Main game loop, for now, later it shall be turned into a class. [hashtag]OOP FTW
+    screen.blit(boat.SEA, (0, 0)) #Blits the background.
+    screen.blit(pygame.transform.scale(boat.boat_img, (40, 40)), (boat.pos_x, boat.pos_y)) #The transform.scale is there because otherwise the boat would be way too big, a ~1/4 of the screen.
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
@@ -701,4 +714,5 @@ while True:
                 boat.turn_left()
             if event.key == K_RIGHT:
                 boat.turn_right()
-    
+
+
