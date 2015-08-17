@@ -107,7 +107,7 @@ class Boat():
         self.pos_x = start_x - 19.25 #Starting x coords of the center of the boat
         self.pos_y = start_y - 19.25 #Starting y coords of the center of the boat
         self.direction = [0, -1]
-        self.speed = 1
+        self.speed = 2
         
 
     def turn_left(self):
@@ -124,12 +124,19 @@ class Boat():
 
         self.pos_x += self.direction[0]*self.speed
         self.pos_y += self.direction[1]*self.speed
+    
+    def backward(self):
+        """This is only used when the player reaches the limit of the window."""
+        if self.angle < 180:
+            self.angle += 180
+        else:
+            self.angle -= 180
+        self.direction[0] = math.sin(-math.radians(self.angle))
+        self.direction[1] = -math.cos(math.radians(self.angle))
+    
+        self.pos_x += self.direction[0]*self.speed 
+        self.pos_y += self.direction[1]*self.speed 
         
-    
-    
-
-
-
     def draw_boat(self):
         """Just returns the surface of the boat_img angled the right way."""
         if self.angle == 0:
@@ -278,6 +285,7 @@ class Boat():
             return self.HB16_355
         
         
+    
         
 class Main():
     def __init__(self):
@@ -290,7 +298,14 @@ class Main():
         while True:
             screen.blit(boat.SEA, (0, 0))  #Blits the background
             screen.blit(pygame.transform.scale(boat.draw_boat(), (40, 40)), (boat.pos_x, boat.pos_y))  #The transform.scale is there because otherwise the boat would be way too big, a ~1/4 of the screen.
-            boat.forward()  #Always make the boat go forward, it's a sailboat, it ain't gonna stop.
+              #Always make the boat go forward, it's a sailboat, it ain't gonna stop.
+            print boat.pos_x, boat.pos_y, boat.angle
+            if boat.pos_x <= -30 or boat.pos_x > RESOLUTION[0] - 30 or boat.pos_y <= -30 or boat.pos_y > RESOLUTION[1]:  #If boat is getting out of the window.
+                boat.backward()
+                
+            else:
+                boat.forward()
+            
             for event in pygame.event.get():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                     pygame.quit()
