@@ -16,8 +16,7 @@ screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
 
 
-class Boat():
-    
+class Boat():    
     def __init__(self, start_angle, start_x, start_y):
         #Images of the HB16 under all the possible angles for the game.
         self.HB16_0   = pygame.image.load("Art/HB16_0.png")
@@ -92,30 +91,21 @@ class Boat():
         self.HB16_345 = pygame.image.load("Art/HB16_345.png")
         self.HB16_350 = pygame.image.load("Art/HB16_350.png")
         self.HB16_355 = pygame.image.load("Art/HB16_355.png")
-        self.SEA      = pygame.image.load("Art/sea.png") #Image of the sea for the background
-        
-        #Few colors, thaught I would put them here in case
-        #                        R  G  B
-        self.RED             = (255, 0, 0)
-        self.GREEN           = (0, 255, 0)
-        self.BLUE            = (0, 0, 255)
-        self.PURPLE          = (128, 0, 128)
-        self.LIGHT_BLUE      = (0, 128, 255)
-        self.GREY            = (128, 128, 128)        
+        self.SEA      = pygame.image.load("Art/sea.png") #Image of the sea for the background        
         
         self.angle = start_angle  #Starting angle of the boat
         self.pos_x = start_x - 19.25 #Starting x coords of the center of the boat
         self.pos_y = start_y - 19.25 #Starting y coords of the center of the boat
         self.direction = [0, -1]
-        self.speed = 2
-        
+        self.speed = -0.01
+        self.sail_trim = 5 #1 is in, 5 is out
 
-    def turn_left(self):
-        self.angle += 5
+    def turn_left(self, degrees):
+        self.angle += degrees
         self.angle %= 360
         
-    def turn_right(self):
-        self.angle -= 5 
+    def turn_right(self, degrees):
+        self.angle -= degrees 
         self.angle %= 360   
         
     def forward(self):
@@ -125,7 +115,7 @@ class Boat():
         self.pos_x += self.direction[0]*self.speed
         self.pos_y += self.direction[1]*self.speed
     
-    def backward(self):
+    def turn_180(self):
         """This is only used when the player reaches the limit of the window."""
         if self.angle < 180:
             self.angle += 180
@@ -283,28 +273,146 @@ class Boat():
             return self.HB16_350
         elif self.angle == 355:
             return self.HB16_355
-        
-        
+    def sail_in(self):
+        if self.sail_trim > 1:
+            self.sail_trim -= 1
     
+    def sail_out(self):
+        if self.sail_trim < 5:
+            self.sail_trim += 1
         
+class Wind():        
+    def __init__(self, wind_power):
+        self.wind_power = wind_power  #Multiples of 2 only !
+    def get_allures(self, boat_angle, sail_trim):
+        self.boat_angle = boat_angle
+        self.sail_trim = sail_trim #I just put this here for convenience instead of having to get it in the get_speed method.
+        if self.boat_angle > 355 or self.boat_angle < 5:
+            self.allure = "vent de face"
+        elif self.boat_angle > 5 and self.boat_angle < 45 or self.boat_angle > 315 and self.boat_angle < 355:
+            self.allure = "pres"
+        elif self.boat_angle > 45 and self.boat_angle < 80 or self.boat_angle > 280 and self.boat_angle < 315:
+            self.allure = "bon plein"
+        elif self.boat_angle > 80 and self.boat_angle < 100 or self.boat_angle > 260 and self.boat_angle < 280:
+            self.allure = "travers"
+        elif self.boat_angle > 100 and self.boat_angle < 140 or self.boat_angle > 220 and self.boat_angle < 260:
+            self.allure = "largue"
+        elif self.boat_angle > 140 and self.boat_angle < 170 or self.boat_angle > 190 and self.boat_angle < 220:
+            self.allure = "grand largue"
+        elif self.boat_angle > 170 and self.boat_angle < 190:
+            self.allure = "vent arriere"
+        
+    def get_speed(self):
+        """Sets the speed of the boat accordingly to the wind angle and sail trim."""
+        if self.allure == "vent de face":
+            return -0.01
+        elif self.allure == "pres":
+            if self.sail_trim == 1:  #Best
+                return 2.2
+            elif self.sail_trim == 2:
+                return 1.8
+            elif self.sail_trim == 3:
+                return 1
+            elif self.sail_trim > 3:
+                return 0.15
+        elif self.allure == "bon plein":
+            if self.sail_trim == 1:
+                return 2.4
+            elif self.sail_trim == 2:  #Best
+                return 2.6
+            elif self.sail_trim == 3:
+                return 1.9
+            elif self.sail_trim == 3:
+                return 1.5
+            elif self.sail_trim == 4:
+                return 1
+            elif self.sail_trim == 5:
+                return 0.3
+        elif self.allure == "travers":  #Fastest one
+            if self.sail_trim == 1:
+                return 2
+            elif self.sail_trim == 2: 
+                return 2.5
+            elif self.sail_trim == 3:  #Best
+                return 3.1
+            elif self.sail_trim == 4:
+                return 1.9
+            elif self.sail_trim == 5:
+                return 0.7
+        elif self.allure == "largue":
+            if self.sail_trim == 1:
+                return 0.3
+            elif self.sail_trim == 2:
+                return 1
+            elif self.sail_trim == 3:
+                return 2.5
+            elif self.sail_trim == 4:  #Best
+                return 3
+            elif self.sail_trim == 5:
+                return 2.4
+        elif self.allure == "grand largue":
+            if self.sail_trim == 1:
+                return 0.2
+            elif self.sail_trim == 2:
+                return 0.5
+            elif self.sail_trim == 3:
+                return 1.5
+            elif self.sail_trim == 4:
+                return 2.5
+            elif self.sail_trim == 5:
+                return 3
+        elif self.allure == "vent arriere":
+            if self.sail_trim == 1:
+                return 0.1
+            elif self.sail_trim == 2:
+                return 0.5
+            elif self.sail_trim == 3:
+                return 1.6
+            elif self.sail_trim == 4:
+                return 2.5
+            elif self.sail_trim == 5:
+                return 2.9
+                
+class inGameHUD():
+    def __init__(self):
+        self.PURPLE = (128, 0, 128)
+        self.WHITE  = (255, 255, 255)
+        self.font = pygame.font.Font("freesansbold.ttf", 16)
+        self.CORNER_OF_HUD = (RESOLUTION[0] - 100, RESOLUTION[1] - 30)
+        
+    def draw(self, sail_trim):
+        pygame.draw.rect(screen, self.PURPLE, (self.CORNER_OF_HUD[0], self.CORNER_OF_HUD[1], 100, 30))
+        text_surface = self.font.render("Sail Trim:{0}/5".format(sail_trim), True, self.WHITE)
+        text_rect = (self.CORNER_OF_HUD[0] + 5, self.CORNER_OF_HUD[1] + 5)  #+'s are to center the text.
+        #text_rect.center = (self.CORNER_OF_HUD[0], self.CORNER_OF_HUD[1])
+        screen.blit(text_surface, text_rect)
+          
 class Main():
     def __init__(self):
+        #Few colors, thaught I would put them here in case
+        #                        R  G  B
+        self.RED             = (255, 0, 0)
+        self.GREEN           = (0, 255, 0)
+        self.BLUE            = (0, 0, 255)
+        self.PURPLE          = (128, 0, 128)
+        self.LIGHT_BLUE      = (0, 128, 255)
+        self.GREY            = (128, 128, 128) 
+        
         self.FPS = 30
         self.fps_clock = pygame.time.Clock()
         boat = Boat(0, 320, 240)
         
     def Run(self):
+        HUD = inGameHUD()
         boat = Boat(0,320, 240)
+        wind = Wind(0)
         while True:
             screen.blit(boat.SEA, (0, 0))  #Blits the background
-            screen.blit(pygame.transform.scale(boat.draw_boat(), (40, 40)), (boat.pos_x, boat.pos_y))  #The transform.scale is there because otherwise the boat would be way too big, a ~1/4 of the screen.
-              #Always make the boat go forward, it's a sailboat, it ain't gonna stop.
-            print boat.pos_x, boat.pos_y, boat.angle
+            screen.blit(pygame.transform.scale(boat.draw_boat(), (30, 30)), (boat.pos_x, boat.pos_y))  #The transform.scale is there because otherwise the boat would be way too big, a ~1/4 of the screen.
             if boat.pos_x <= -30 or boat.pos_x > RESOLUTION[0] - 30 or boat.pos_y <= -30 or boat.pos_y > RESOLUTION[1]:  #If boat is getting out of the window.
-                boat.backward()
-                
+                boat.turn_180()
             else:
-                boat.forward()
+                boat.forward()  #Always make the boat go forward, it's a sailboat, it ain't gonna stop.
             
             for event in pygame.event.get():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
@@ -312,13 +420,29 @@ class Main():
                     sys.exit()          
                 if event.type == KEYDOWN:
                     if event.key == K_LEFT:
-                        boat.turn_left()
+                        boat.turn_left(15)
                     if event.key == K_RIGHT:
-                        boat.turn_right()
+                        boat.turn_right(15)
+                    if event.key == K_g:
+                        boat.turn_left(5)
+                    if event.key == K_h:
+                        boat.turn_right(5)
+                    if event.key == K_f:
+                        boat.turn_left(10)
+                    if event.key == K_j:
+                        boat.turn_right(10)
+                    if event.key == K_LCTRL or event.key == K_RCTRL:
+                        boat.sail_in()
+                    if event.key == K_LSHIFT or event.key == K_RSHIFT:
+                        boat.sail_out()
                         
+            wind.get_allures(boat.angle, boat.sail_trim)
+            boat.speed = wind.get_speed()
+            HUD.draw(boat.sail_trim)
             pygame.display.update()
             self.fps_clock.tick(self.FPS)
             
+
 Game = Main()
 Game.Run()
                         
