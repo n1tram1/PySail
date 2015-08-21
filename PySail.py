@@ -12,11 +12,27 @@ import pygame
 from pygame.locals import *
 
 pygame.init()
-RESOLUTION = (1024, 720)
+RESOLUTION = (640, 480)
 screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
+FPS = 60
 
+class Menu():
+    def __init__(self):
+        self.background_img = pygame.transform.scale(pygame.image.load("Art/menu_bg.png"), (RESOLUTION))
+        
+    def Run(self):
+        while True:
+            screen.blit(self.background_img, (0, 0))  #Blits the background           
+            for event in pygame.event.get():
+                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()                  
+                
+            pygame.display.update()
+            
 
+            
 class Boat():    
     def __init__(self, start_angle, start_x, start_y):
         #Images of the HB16 under all the possible angles for the game.
@@ -371,7 +387,7 @@ class Wind():
                 return 1.6
             elif self.sail_trim == 4:
                 return 2.5
-            elif self.sail_trim == 5:
+            elif self.sail_trim == 5:  #Best
                 return 2.9
           
 class Buoys():
@@ -408,7 +424,7 @@ class Buoys():
         while len(self.BUOYS) < 3:
             random_buoy = self.generate_buoy_coords()
             for i in range(0,len(self.BUOYS)):
-                if self.distance_between_points(random_buoy, self.BUOYS[i]) < 200:
+                if self.distance_between_points(random_buoy, self.BUOYS[i]) > 500:
                     pass
                 else:
                     self.BUOYS.append(random_buoy)
@@ -433,22 +449,10 @@ class Buoys():
     def all_pixels_in_checkpoint(self, checkpoint_rect):
         #This returns in a list all the coords of all the pixels in a checkpoint.
         pixels_list = []
-        for x in range(checkpoint_rect.x, checkpoint_rect.x + 93):
+        for x in range(checkpoint_rect.x - 20, checkpoint_rect.x + 115):
             for y in range(checkpoint_rect.y, checkpoint_rect.y + 1):
                 pixels_list.append((x, y))
-        return pixels_list
-        #self.first_pixels = []
-        #for x in range(self.first_checkpoint.x, self.first_checkpoint.x + 93):
-            #for y in range(self.first_checkpoint.y, self.first_checkpoint.y + 4):
-                #self.first_pixels.append((x, y))
-        #self.second_pixels = []
-        #for x in range(self.second_checkpoint.x, self.second_checkpoint.x + 93):
-            #for y in range(self.second_checkpoint.y, self.second_checkpoint.y):
-                #self.second_pixels.append((x, y))        
-        #self.third_pixels = []
-        #for x in range(self.third_checkpoint.x, self.third_checkpoint.x + 93):
-            #for y in range(self.third_checkpoint.y, self.third_checkpoint.y):
-                #self.third_pixels.append((x, y))        
+        return pixels_list   
    
             
 class inGameHUD():
@@ -473,13 +477,25 @@ class Main():
         self.BLUE            = (0, 0, 255)
         self.PURPLE          = (128, 0, 128)
         self.LIGHT_BLUE      = (0, 128, 255)
-        self.GREY            = (128, 128, 128) 
+        self.GREY            = (128, 128, 128)
+        self.GREENY          = (137, 212, 102)
+        self.font = pygame.font.Font("freesansbold.ttf", 32)
         
-        self.FPS = 30
         self.fps_clock = pygame.time.Clock()
         self.laps = 0
         self.checkpoint_counter = 0  #How many checkpoints have been passed.
         self.total_laps = 3  #Default is 3; amount of laps to be completed.
+        
+        self.wins_coords = []  #Coords all the things to be blitted when the game is won.
+        
+        
+    def winningAnimation(self):
+        """Draw random win str's all over the string when laps done."""
+        text_surface = self.font.render("WON", True, self.GREENY)
+        self.wins_coords.append((random.randint(0, RESOLUTION[0]), random.randint(0, RESOLUTION[1])))  #+'s are to center the text.
+        for i in self.wins_coords:
+            screen.blit(text_surface, i)            
+    
         
     def Run(self):
         HUD = inGameHUD()
@@ -519,7 +535,8 @@ class Main():
                     self.laps += 1
             
             if self.laps >= self.total_laps:  #All the laps have been completed.
-                print "WON " * 9000
+                print "WON "
+                self.winningAnimation()
             
             for event in pygame.event.get():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
@@ -545,10 +562,18 @@ class Main():
                         
             HUD.draw(boat.sail_trim, self.laps, self.total_laps, self.checkpoint_counter)
             pygame.display.update()
-            self.fps_clock.tick(self.FPS)
+            self.fps_clock.tick(FPS)
             
 
-Game = Main()
-Game.Run()
+#Game = Main()
+#Game.Run()
 
+menu = Menu()
+menu.Run()
+
+
+###TODO
+#Finish the menu
 #Some buoys are not far apart enough
+#Fix the sail trims, sail trim 2/5 doesn't do anything (bon plein was removed)
+#Add menu
