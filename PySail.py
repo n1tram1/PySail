@@ -12,7 +12,7 @@ import pygame
 from pygame.locals import *
 
 pygame.init()
-RESOLUTION = (640, 480)
+RESOLUTION = (1900, 1000)
 screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
 FPS = 60
@@ -400,6 +400,7 @@ class Buoys():
         self.BUOYS = [(
             random.choice(self.possible_buoys_coords_x), random.choice(self.possible_buoys_coords_y))]
         self.slalom_buoys = [(RESOLUTION[0] / 10, RESOLUTION[1] / 2), (RESOLUTION[0] / 2, RESOLUTION[1] / 2), (RESOLUTION[0] - 120, RESOLUTION[1] / 2)]
+        self.triangle_buoys = [(RESOLUTION[0] / 6, RESOLUTION[1] - 200), (RESOLUTION[0] - 200, RESOLUTION[1] - 200), (RESOLUTION[0] - 200, RESOLUTION[1] / 6)]
         
     def distance_between_points(self, point1, point2):
         """Point1 and point2 are tuples of the point's coords"""
@@ -418,17 +419,14 @@ class Buoys():
                 self.BUOYS = self.slalom_buoys
             elif preset == "triangle":
                 self.BUOYS = self.triangle_buoys
-                self.numberof_checkpoints = len(self.BUOYS)
             return
 
         while len(self.BUOYS) < 3:
             random_buoy = self.generate_buoy_coords()
-            for i in range(0,len(self.BUOYS)):
-                if self.distance_between_points(random_buoy, self.BUOYS[i]) > 500:
-                    pass
-                else:
+            for i in self.BUOYS:
+                if self.distance_between_points(i, random_buoy) > RESOLUTION[1] / 3.5:
                     self.BUOYS.append(random_buoy)
-                    self.numberof_checkpoints = len(self.BUOYS)
+
     def draw_buoys(self):
         for i in range(0, len(self.BUOYS)):
             pygame.draw.circle(screen, self.YELLOW, self.BUOYS[i], 5)
@@ -501,7 +499,7 @@ class Main():
         HUD = inGameHUD()
         boat = Boat(0,320, 240)
         buoys = Buoys()
-        buoys.make_buoys_list()
+        buoys.make_buoys_list(preset="triangle")
         buoys.draw_checkpoints()
         wind = Wind(0.8)
         
@@ -565,11 +563,11 @@ class Main():
             self.fps_clock.tick(FPS)
             
 
-#Game = Main()
-#Game.Run()
+Game = Main()
+Game.Run()
 
-menu = Menu()
-menu.Run()
+#menu = Menu()
+#menu.Run()
 
 
 ###TODO
