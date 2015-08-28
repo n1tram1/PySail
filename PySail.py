@@ -21,6 +21,68 @@ class Menu():
     def __init__(self):
         self.background_img = pygame.transform.scale(pygame.image.load("Art/menu_bg.png"), (RESOLUTION))
         
+        self.color_select = (255, 255, 255)
+        self.color_unselect = (255, 0, 0)
+        
+        #Font settings for every menu item.
+        self.menu_res_640480 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_800600 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_1024768 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_1280720 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_1280960 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_1366768 = pygame.font.SysFont('Arial',32,True)
+        self.menu_res_19001000 = pygame.font.SysFont('Arial',32,True)
+        
+        #Selection settings at start.
+        self.menu_res_640480_color = self.color_select
+        self.menu_res_800600_color = self.color_unselect
+        self.menu_res_1024768_color = self.color_unselect
+        self.menu_res_1280720_color = self.color_unselect
+        self.menu_res_1280960_color = self.color_unselect
+        self.menu_res_1366768_color = self.color_unselect
+        self.menu_res_19001000_color = self.color_unselect
+        
+        #Selection strings.
+        self.menu_res_640480_string = "640 x 480"
+        self.menu_res_800600_string = "800 x 600"
+        self.menu_res_1024768_string = "1024 x 768"
+        self.menu_res_1280720_string = "1280 x 720"
+        self.menu_res_1280960_string = "1280 x 960"
+        self.menu_res_1366768_string = "1366 x 768"
+        self.menu_res_19001000_string = "1900 x 1000"
+        
+        self.menu_res_choice = 0  #Max is 7.
+    
+    def menu_res_down(self):
+        #Pressed down arrow key.
+        if self.menu_res_choice < 7 and self.menu_res_choice >= 0:
+            #This menu item exists
+            self.menu_res_choice += 1
+        if self.menu_res_choice == 7:  #Reached end of menu.
+            self.menu_res_choice = 0
+        elif self.menu_res_choice == 0:
+            self.menu_res_640480_color = self.color_select
+        elif self.menu_res_choice == 1:
+            self.menu_res_640480_color = self.color_unselect
+            self.menu_res_800600_color = self.color_select
+        elif self.menu_res_choice == 2:
+            self.menu_res_800600_color = self.color_unselect
+            self.menu_res_1024768_color = self.color_select
+        elif self.menu_res_choice == 3:
+            self.menu_res_1024768_color = self.color_unselect
+            self.menu_res_1280720_color = self.color_select
+        elif self.menu_res_choice == 4:
+            self.menu_res_1280720_color = self.color_unselect
+            self.menu_res_1280960_color = self.color_select
+        elif self.menu_res_choice == 5:
+            self.menu_res_1280960_color = self.color_unselect
+            self.menu_res_1366768_color = self.color_select
+        elif self.menu_res_choice == 6:
+            self.menu_res_1366768_color = self.color_unselect
+            self.menu_res_19001000_color = self.color_select
+        elif self.menu_res_choice == 7:
+            self.menu_res_choice = 0
+            
     def Run(self):
         while True:
             screen.blit(self.background_img, (0, 0))  #Blits the background           
