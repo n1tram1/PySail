@@ -12,12 +12,13 @@ import pygame
 from pygame.locals import *
 
 pygame.init()
-RESOLUTION = (1900, 1000)
+RESOLUTION = [640, 480]
 screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
 FPS = 60
-
-class Menu():
+    
+class graphicalMenu():
+    """This is a graphical menu for PySail and is yet to be completed."""
     def __init__(self):
         self.background_img = pygame.transform.scale(pygame.image.load("Art/menu_bg.png"), (RESOLUTION))
         
@@ -81,7 +82,42 @@ class Menu():
             self.menu_res_1366768_color = self.color_unselect
             self.menu_res_19001000_color = self.color_select
         elif self.menu_res_choice == 7:
+            self.menu_res_choice = 0 
+            
+    def menu_res_up(self):
+        #Pressed the up arrow key.
+        if self.menu_res_choice < 7 and self.menu_res_choice >= 0:
+                    #This menu item exists
+                    self.menu_res_choice -= 1
+        if self.menu_res_choice == 7:  #Reached end of menu.
+                    self.menu_res_choice = 0
+        if self.menu_res_choice == 0:
+            self.menu_res_640480_color = self.color_select
+        elif self.menu_res_choice == 1:
+            self.menu_res_640480_color = self.color_unselect
+            self.menu_res_800600_color = self.color_select
+        elif self.menu_res_choice == 2:
+            self.menu_res_800600_color = self.color_unselect
+            self.menu_res_1024768_color = self.color_select
+        elif self.menu_res_choice == 3:
+            self.menu_res_1024768_color = self.color_unselect
+            self.menu_res_1280720_color = self.color_select
+        elif self.menu_res_choice == 4:
+            self.menu_res_1280720_color = self.color_unselect
+            self.menu_res_1280960_color = self.color_select
+        elif self.menu_res_choice == 5:
+            self.menu_res_1280960_color = self.color_unselect
+            self.menu_res_1366768_color = self.color_select
+        elif self.menu_res_choice == 6:
+            self.menu_res_1366768_color = self.color_unselect
+            self.menu_res_19001000_color = self.color_select
+        elif self.menu_res_choice == 7:
             self.menu_res_choice = 0
+    def set_proper_string(self):
+        #Sets the proper string to be rendered depending on the current menu_res_choice.
+        if self.menu_res_choice == 0:
+            pass
+                    
             
     def Run(self):
         while True:
@@ -89,7 +125,11 @@ class Menu():
             for event in pygame.event.get():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                     pygame.quit()
-                    sys.exit()                  
+                    sys.exit()
+                elif event.type == KEYDOWN and event.key == K_DOWN:
+                    self.menu_res_down()
+                elif event.type == KEYDOWN and event.key == K_UP:
+                    self.menu_res_up()
                 
             pygame.display.update()
             
@@ -417,7 +457,7 @@ class Wind():
             elif self.sail_trim == 4:
                 return 1.9
             elif self.sail_trim == 5:
-                return 0.7
+                return 0.20
         elif self.allure == "largue":
             if self.sail_trim == 1:
                 return 0.3
@@ -436,7 +476,7 @@ class Wind():
                 return 0.5
             elif self.sail_trim == 3:
                 return 1.5
-            elif self.sail_trim == 4:
+            elif self.sail_trim == 4:  #Best
                 return 2.5
             elif self.sail_trim == 5:
                 return 3
@@ -474,9 +514,9 @@ class Buoys():
             random.choice(self.possible_buoys_coords_x),     random.choice(self.possible_buoys_coords_y)
                )
     
-    def make_buoys_list(self, preset=False):
+    def make_buoys_list(self, preset="random"):
         """Append the buoys to the BUOYS list if they are not too close to one another or if preset true, used an already existing map."""
-        if preset != False:
+        if preset != "random":
             if preset == "slalom":
                 self.BUOYS = self.slalom_buoys
             elif preset == "triangle":
@@ -542,13 +582,16 @@ class Main():
         self.font = pygame.font.Font("freesansbold.ttf", 32)
         
         self.fps_clock = pygame.time.Clock()
+        
         self.laps = 0
         self.checkpoint_counter = 0  #How many checkpoints have been passed.
         self.total_laps = 3  #Default is 3; amount of laps to be completed.
+        self.level = "random"  #random course is default
         
         self.wins_coords = []  #Coords all the things to be blitted when the game is won.
         
-        
+    def cliMenu(self):
+        pass
     def winningAnimation(self):
         """Draw random win str's all over the string when laps done."""
         text_surface = self.font.render("WON", True, self.GREENY)
@@ -561,7 +604,7 @@ class Main():
         HUD = inGameHUD()
         boat = Boat(0,320, 240)
         buoys = Buoys()
-        buoys.make_buoys_list(preset="triangle")
+        buoys.make_buoys_list(preset=self.level)
         buoys.draw_checkpoints()
         wind = Wind(0.8)
         
@@ -595,7 +638,6 @@ class Main():
                     self.laps += 1
             
             if self.laps >= self.total_laps:  #All the laps have been completed.
-                print "WON "
                 self.winningAnimation()
             
             for event in pygame.event.get():
@@ -625,15 +667,12 @@ class Main():
             self.fps_clock.tick(FPS)
             
 
+
 Game = Main()
 Game.Run()
 
-#menu = Menu()
-#menu.Run()
-
 
 ###TODO
-#Finish the menu
-#Some buoys are not far apart enough
-#Fix the sail trims, sail trim 2/5 doesn't do anything (bon plein was removed)
-#Add menu
+#Finish the cliMenu, put it as a method inside the Main class.
+#Finish the graphicalMenu
+
