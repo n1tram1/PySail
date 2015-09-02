@@ -16,7 +16,12 @@ RESOLUTION = [640, 480]
 screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
 FPS = 60
-    
+
+def set_resolution(x_res, y_res):
+    global RESOLUTION
+    RESOLUTION = [x_res, y_res]
+    global screen
+    screen = pygame.display.set_mode(RESOLUTION)
 class graphicalMenu():
     """This is a graphical menu for PySail and is yet to be completed."""
     def __init__(self):
@@ -588,10 +593,61 @@ class Main():
         self.total_laps = 3  #Default is 3; amount of laps to be completed.
         self.level = "random"  #random course is default
         
+        self.windspeed = 0.8  #Default is 0.8
+        
         self.wins_coords = []  #Coords all the things to be blitted when the game is won.
         
     def cliMenu(self):
-        pass
+        """Command line based menu for PySail."""
+        
+        print "   --=PySail=--"
+        print "Welcome to PySail, the arcade sailing game written in Python."
+        print "\n These are the resolutions you can play at:"
+        print "(1) 640x480"
+        print "(2) 1024x720"
+        print "(3) 1024x768"
+        print "(4) 1280x768"
+        print "(5) 1366x768"
+        print "(6) 1920x1080"
+        while True:  #While the input is incorrect.
+            user_resolution = raw_input("Enter the number of the resolution you want:")
+            if user_resolution in str(range(1,7)):  #One of the offered resolutions.
+                if user_resolution == "1":
+                    set_resolution(640, 480)
+                elif user_resolution == "2":
+                    set_resolution(1024, 720)
+                elif user_resolution == "3":
+                    set_resolution(1024, 768)
+                elif user_resolution == "4":
+                    set_resolution(1280, 768)
+                elif user_resolution == "5":
+                    set_resolution(1366, 768)
+                elif user_resolution == "6":
+                    set_resolution(1920, 1080)
+                break  #Gathered the right input, get ouf of the loop.
+            else:
+                print "Incorrect input !!!"
+                
+        print "\n-=-LEVELS-=-"
+        print "(1) Slalom"
+        print "(2) Triangle"
+        print "(3) Random"        
+        while True:  #While the input is incorrect.
+            user_level = raw_input("Which level do you want to play ?:")
+            if user_level in str(range(1,4)):  #Check if input is one of the levels.
+                if user_level == "1":
+                    self.level = "slalom"
+                elif user_level == "2":
+                    self.level == "triangle"
+                elif user_level == "3":
+                    self.level == "random"
+                break  #Gathered the right input, get ouf of the loop.
+            else:
+                "Incorrect input !!!"
+        print "Great choice !"
+        
+            
+        
     def winningAnimation(self):
         """Draw random win str's all over the string when laps done."""
         text_surface = self.font.render("WON", True, self.GREENY)
@@ -601,12 +657,13 @@ class Main():
     
         
     def Run(self):
+        self.cliMenu()
         HUD = inGameHUD()
         boat = Boat(0,320, 240)
         buoys = Buoys()
         buoys.make_buoys_list(preset=self.level)
         buoys.draw_checkpoints()
-        wind = Wind(0.8)
+        wind = Wind(self.windspeed)
         
         while True:
             screen.blit(boat.SEA, (0, 0))  #Blits the background
@@ -674,5 +731,6 @@ Game.Run()
 
 ###TODO
 #Finish the cliMenu, put it as a method inside the Main class.
+#The triangle course is fucked up.
 #Finish the graphicalMenu
 
