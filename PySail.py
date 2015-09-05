@@ -645,8 +645,13 @@ class Main():
             else:
                 "Incorrect input !!!"
         print "Great choice !"
-        
-            
+        print "\n"
+        while True:            
+            try:  
+                user_wind = input("Choose the speed of the wind (recommended is in between 0.8 and 5):")
+                break
+            except NameError:
+                print "Oops, invalid input !!!"
         
     def winningAnimation(self):
         """Draw random win str's all over the string when laps done."""
@@ -730,7 +735,6 @@ Game.Run()
 
 
 ###TODO
-#Finish the cliMenu, put it as a method inside the Main class.
 #The triangle course is fucked up.
 #Finish the graphicalMenu
 
