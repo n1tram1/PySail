@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#Python version is 2.7.6
+#Python version is 2.7.9
 #Author: Martin Schmidt aka qw2100m
 #READ THE README
 #Oh and all the '- 19.25' throughout this code are so that coords of an img are the ones of the center of that img instead of it's top left corner.
@@ -7,13 +7,15 @@
 import sys
 import math
 import time
+import threading
+import socket
+import pickle
 import random
 import pygame
 from pygame.locals import *
 
 pygame.init()
 RESOLUTION = [640, 480]
-screen = pygame.display.set_mode(RESOLUTION)
 pygame.display.set_caption("PySail")
 FPS = 60
 
@@ -22,123 +24,6 @@ def set_resolution(x_res, y_res):
     RESOLUTION = [x_res, y_res]
     global screen
     screen = pygame.display.set_mode(RESOLUTION)
-class graphicalMenu():
-    """This is a graphical menu for PySail and is yet to be completed."""
-    def __init__(self):
-        self.background_img = pygame.transform.scale(pygame.image.load("Art/menu_bg.png"), (RESOLUTION))
-        
-        self.color_select = (255, 255, 255)
-        self.color_unselect = (255, 0, 0)
-        
-        #Font settings for every menu item.
-        self.menu_res_640480 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_800600 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_1024768 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_1280720 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_1280960 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_1366768 = pygame.font.SysFont('Arial',32,True)
-        self.menu_res_19001000 = pygame.font.SysFont('Arial',32,True)
-        
-        #Selection settings at start.
-        self.menu_res_640480_color = self.color_select
-        self.menu_res_800600_color = self.color_unselect
-        self.menu_res_1024768_color = self.color_unselect
-        self.menu_res_1280720_color = self.color_unselect
-        self.menu_res_1280960_color = self.color_unselect
-        self.menu_res_1366768_color = self.color_unselect
-        self.menu_res_19001000_color = self.color_unselect
-        
-        #Selection strings.
-        self.menu_res_640480_string = "640 x 480"
-        self.menu_res_800600_string = "800 x 600"
-        self.menu_res_1024768_string = "1024 x 768"
-        self.menu_res_1280720_string = "1280 x 720"
-        self.menu_res_1280960_string = "1280 x 960"
-        self.menu_res_1366768_string = "1366 x 768"
-        self.menu_res_19001000_string = "1900 x 1000"
-        
-        self.menu_res_choice = 0  #Max is 7.
-    
-    def menu_res_down(self):
-        #Pressed down arrow key.
-        if self.menu_res_choice < 7 and self.menu_res_choice >= 0:
-            #This menu item exists
-            self.menu_res_choice += 1
-        if self.menu_res_choice == 7:  #Reached end of menu.
-            self.menu_res_choice = 0
-        elif self.menu_res_choice == 0:
-            self.menu_res_640480_color = self.color_select
-        elif self.menu_res_choice == 1:
-            self.menu_res_640480_color = self.color_unselect
-            self.menu_res_800600_color = self.color_select
-        elif self.menu_res_choice == 2:
-            self.menu_res_800600_color = self.color_unselect
-            self.menu_res_1024768_color = self.color_select
-        elif self.menu_res_choice == 3:
-            self.menu_res_1024768_color = self.color_unselect
-            self.menu_res_1280720_color = self.color_select
-        elif self.menu_res_choice == 4:
-            self.menu_res_1280720_color = self.color_unselect
-            self.menu_res_1280960_color = self.color_select
-        elif self.menu_res_choice == 5:
-            self.menu_res_1280960_color = self.color_unselect
-            self.menu_res_1366768_color = self.color_select
-        elif self.menu_res_choice == 6:
-            self.menu_res_1366768_color = self.color_unselect
-            self.menu_res_19001000_color = self.color_select
-        elif self.menu_res_choice == 7:
-            self.menu_res_choice = 0 
-            
-    def menu_res_up(self):
-        #Pressed the up arrow key.
-        if self.menu_res_choice < 7 and self.menu_res_choice >= 0:
-                    #This menu item exists
-                    self.menu_res_choice -= 1
-        if self.menu_res_choice == 7:  #Reached end of menu.
-                    self.menu_res_choice = 0
-        if self.menu_res_choice == 0:
-            self.menu_res_640480_color = self.color_select
-        elif self.menu_res_choice == 1:
-            self.menu_res_640480_color = self.color_unselect
-            self.menu_res_800600_color = self.color_select
-        elif self.menu_res_choice == 2:
-            self.menu_res_800600_color = self.color_unselect
-            self.menu_res_1024768_color = self.color_select
-        elif self.menu_res_choice == 3:
-            self.menu_res_1024768_color = self.color_unselect
-            self.menu_res_1280720_color = self.color_select
-        elif self.menu_res_choice == 4:
-            self.menu_res_1280720_color = self.color_unselect
-            self.menu_res_1280960_color = self.color_select
-        elif self.menu_res_choice == 5:
-            self.menu_res_1280960_color = self.color_unselect
-            self.menu_res_1366768_color = self.color_select
-        elif self.menu_res_choice == 6:
-            self.menu_res_1366768_color = self.color_unselect
-            self.menu_res_19001000_color = self.color_select
-        elif self.menu_res_choice == 7:
-            self.menu_res_choice = 0
-    def set_proper_string(self):
-        #Sets the proper string to be rendered depending on the current menu_res_choice.
-        if self.menu_res_choice == 0:
-            pass
-                    
-            
-    def Run(self):
-        while True:
-            screen.blit(self.background_img, (0, 0))  #Blits the background           
-            for event in pygame.event.get():
-                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == KEYDOWN and event.key == K_DOWN:
-                    self.menu_res_down()
-                elif event.type == KEYDOWN and event.key == K_UP:
-                    self.menu_res_up()
-                
-            pygame.display.update()
-            
-
             
 class Boat():    
     def __init__(self, start_angle, start_x, start_y):
@@ -507,7 +392,8 @@ class Buoys():
         self.BUOYS = [(
             random.choice(self.possible_buoys_coords_x), random.choice(self.possible_buoys_coords_y))]
         self.slalom_buoys = [(RESOLUTION[0] / 10, RESOLUTION[1] / 2), (RESOLUTION[0] / 2, RESOLUTION[1] / 2), (RESOLUTION[0] - 120, RESOLUTION[1] / 2)]
-        self.triangle_buoys = [(RESOLUTION[0] / 6, RESOLUTION[1] - 200), (RESOLUTION[0] - 200, RESOLUTION[1] - 200), (RESOLUTION[0] - 200, RESOLUTION[1] / 6)]
+        #self.triangle_buoys = [(RESOLUTION[0] / 6, RESOLUTION[1] - RESOLUTION[1] / 6) ]
+        self.triangle_buoys = [(RESOLUTION[0] / 8, RESOLUTION[1] - RESOLUTION[1] / 8), (RESOLUTION[0] - RESOLUTION[0] / 6, RESOLUTION[1] - RESOLUTION[1] / 8), (RESOLUTION[0] - RESOLUTION[0] / 6, RESOLUTION[1] / 6)]
         
     def distance_between_points(self, point1, point2):
         """Point1 and point2 are tuples of the point's coords"""
@@ -524,7 +410,7 @@ class Buoys():
         if preset != "random":
             if preset == "slalom":
                 self.BUOYS = self.slalom_buoys
-            elif preset == "triangle":
+            if preset == "triangle":
                 self.BUOYS = self.triangle_buoys
             return
 
@@ -560,18 +446,50 @@ class Buoys():
         return pixels_list   
    
             
-class inGameHUD():
+class InGameText():
     def __init__(self):
         self.PURPLE = (128, 0, 128)
         self.WHITE  = (255, 255, 255)
-        self.font = pygame.font.Font("freesansbold.ttf", 16)
+        self.GREY            = (128, 128, 128)
+        self.font8 = pygame.font.Font("freesansbold.ttf", 8)
+        self.font16 = pygame.font.Font("freesansbold.ttf", 16)
         self.CORNER_OF_HUD = (RESOLUTION[0] - 350, RESOLUTION[1] - 30)
         
     def draw(self, sail_trim, laps, total_laps, checkpoint):
         pygame.draw.rect(screen, self.PURPLE, (self.CORNER_OF_HUD[0], self.CORNER_OF_HUD[1], 350, 30))
-        text_surface = self.font.render("Sail Trim:{0}/5    Checkpoint = {3}/3    Laps:{1}/{2}".format(sail_trim, laps, total_laps, checkpoint), True, self.WHITE)
+        text_surface = self.font16.render("Sail Trim:{0}/5    Checkpoint = {3}/3    Laps:{1}/{2}".format(sail_trim, laps, total_laps, checkpoint), True, self.WHITE)
         text_rect = (self.CORNER_OF_HUD[0] + 5, self.CORNER_OF_HUD[1] + 5)  #+'s are to center the text.
         screen.blit(text_surface, text_rect)
+    
+    def display_username(self, username, pos_x, pos_y):
+        text_surface = self.font8.render(username, True, self.GREY)
+        screen.blit(text_surface, (pos_x, pos_y))
+    
+class Network(self):
+    """Create a socket when called, this handles all the networking and so serializing."""
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    def serialize(self, data):
+        return pickle.dumps(data)
+    
+    def unserialize(self, data):
+        return pickle.loads(data)
+    
+    def connect(self):
+        self.socket.connect((self.host, self.port))
+    
+    def send(self, data):
+        self.socket.sendall(data)
+        
+    def receive(self):
+        self.socket.recv(4096)
+    
+    def close_socket(self):
+        self.socket.close()
+
           
 class Main():
     def __init__(self):
@@ -602,6 +520,13 @@ class Main():
         
         print "   --=PySail=--"
         print "Welcome to PySail, the arcade sailing game written in Python."
+        while True:  #While username is not too short nor too big.
+            self.username = raw_input("What do you want your username to be ?:")
+            self.username = str(self.username)
+            if len(self.username) < 1 or len(self.username) > 20:
+                print "This is too short or too long (min:1, max:20) !"
+            else:
+                break
         print "\n These are the resolutions you can play at:"
         print "(1) 640x480"
         print "(2) 1024x720"
@@ -638,20 +563,22 @@ class Main():
                 if user_level == "1":
                     self.level = "slalom"
                 elif user_level == "2":
-                    self.level == "triangle"
+                    self.level = "triangle"
                 elif user_level == "3":
                     self.level == "random"
                 break  #Gathered the right input, get ouf of the loop.
             else:
                 "Incorrect input !!!"
-        print "Great choice !"
-        print "\n"
+        print "Great choice !\n"
         while True:            
             try:  
-                user_wind = input("Choose the speed of the wind (recommended is in between 0.8 and 5):")
+                user_wind = input("Choose the speed of the wind (recommended is in between 0.5 and 3, the higher your resolution, the higher it should be, default is 0.8):")
+                self.windspeed = user_wind
                 break
             except NameError:
                 print "Oops, invalid input !!!"
+            except EOFError:
+                print "You didn't type in a something."
         
     def winningAnimation(self):
         """Draw random win str's all over the string when laps done."""
@@ -661,9 +588,9 @@ class Main():
             screen.blit(text_surface, i)            
     
         
-    def Run(self):
+    def run_singleplayer(self):
         self.cliMenu()
-        HUD = inGameHUD()
+        HUD = InGameText()
         boat = Boat(0,320, 240)
         buoys = Buoys()
         buoys.make_buoys_list(preset=self.level)
@@ -674,6 +601,7 @@ class Main():
             screen.blit(boat.SEA, (0, 0))  #Blits the background
             screen.blit(boat.boat_img, (boat.pos_x, boat.pos_y)) #Blit the boat image.
             boat.draw_boat()
+            HUD.display_username(self.username, boat.pos_x, boat.pos_y + 30)  #+30 so the username is right below the boat.
             wind.get_allures(boat.angle, boat.sail_trim)
             boat.speed = wind.get_speed() * wind.wind_speed
             buoys.draw_buoys()
@@ -728,13 +656,20 @@ class Main():
             pygame.display.update()
             self.fps_clock.tick(FPS)
             
+    def run_multiplayer(self):
+        network = Network("127.0.0.1", 2269)
+        network.connect("127.0.0.1", 2269)
+        #First let's get all the settings from the server
+         
+        
 
 
 Game = Main()
-Game.Run()
+
+if __name__ == "__main__":
+    Game.run_multiplayer()
 
 
 ###TODO
-#The triangle course is fucked up.
 #Finish the graphicalMenu
 
