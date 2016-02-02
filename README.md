@@ -1,4 +1,6 @@
 # PySail
+[2/2/2016] Started working on PySail 2, anything below is about PySail 1.
+
 [9/5/2015] 1.0 Release, finally playable.
 
 Intro:
